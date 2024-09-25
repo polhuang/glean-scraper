@@ -23,6 +23,21 @@ output_csv = "scraped-linkedin_profiles.csv"
 #     'Interests': [str(interest) for interests in person.interests]
 #     }
 
+def format_experiences(experiences):
+    formatted_experiences = []
+    for exp in experiences:
+        exp_str = (
+            f"Position: {exp.position_title}\n"
+            f"Company: {exp.institution_name}\n"
+            f"From: {exp.from_date} - To: {exp.to_date}\n"
+            f"Duration: {exp.duration}\n"
+            f"Location: {exp.location}\n"
+            f"LinkedIn URL: {exp.linkedin_url}\n"
+        )
+        formatted_experiences.append(exp_str)
+    
+    return "\n\n".join(formatted_experiences)
+
 def scrape_linkedin_profile(url):
     try:
         person = Person(url, driver=driver, scrape=True)
@@ -32,7 +47,7 @@ def scrape_linkedin_profile(url):
             'Job Title': person.job_title,
             'Company': person.company,
             'About': person.about,
-            'Experience': [str(experience) for experience in person.experiences],
+            'Experience': format_experiences(person.experiences),
             'Education': [str(education) for education in person.educations],
             'Interests': [str(interest) for interests in person.interests]
         }
