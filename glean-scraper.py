@@ -1,27 +1,23 @@
 from linkedin_scraper import Person, actions
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
 import credentials
 
 driver = webdriver.Chrome()
-email = credentials.EMAIL
-password = credentials.PASSWORD
-actions.login(driver, email, password)
 input_csv = "linkedin-urls.csv"
 output_csv = "scraped-linkedin_profiles.csv"
 
-# person = Person("https://www.linkedin.com/in/andre-iguodala-65b48ab5", driver = driver, scrape=False)
-# person.scrape()
+chrome_options = Options()
+chrome_options.add_argument("--headless")
 
-# data = {
-#     'Name': person.name,
-#     'Job Title': person.job_title,
-#     'Company': person.company,
-#     'About': person.about,
-#     'Experience': [str(experience) for experience in person.experiences],
-#     'Education': [str(education) for education in person.educations],
-#     'Interests': [str(interest) for interests in person.interests]
-#     }
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
+email = credentials.EMAIL
+password = credentials.PASSWORD
+actions.login(driver, email, password)
 
 def format_experience(experiences):
     formatted_experiences = []
