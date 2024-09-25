@@ -1,25 +1,27 @@
 from linkedin_scraper import Person, actions
 from selenium import webdriver
+import pandas as pd
 import credentials
 
 driver = webdriver.Chrome()
 email = credentials.EMAIL
 password = credentials.PASSWORD
 actions.login(driver, email, password)
+input_csv = "linkedin-urls.csv"
+output_csv = "scraped-linkedin_profiles.csv"
 
-    
-person = Person("https://www.linkedin.com/in/andre-iguodala-65b48ab5", driver = driver, scrape=False)
-person.scrape()
+# person = Person("https://www.linkedin.com/in/andre-iguodala-65b48ab5", driver = driver, scrape=False)
+# person.scrape()
 
-data = {
-    'Name': person.name,
-    'Job Title': person.job_title,
-    'Company': person.company,
-    'About': person.about,
-    'Experience': [str(experience) for experience in person.experiences],
-    'Education': [str(education) for education in person.educations],
-    'Interests': [str(interest) for interests in person.interests]
-    }
+# data = {
+#     'Name': person.name,
+#     'Job Title': person.job_title,
+#     'Company': person.company,
+#     'About': person.about,
+#     'Experience': [str(experience) for experience in person.experiences],
+#     'Education': [str(education) for education in person.educations],
+#     'Interests': [str(interest) for interests in person.interests]
+#     }
 
 def scrape_linkedin_profile(url):
     try:
@@ -30,11 +32,11 @@ def scrape_linkedin_profile(url):
             'Job Title': person.job_title,
             'Company': person.company,
             'About': person.about,
-            'Experience': [str(exp) for exp in person.experiences],
-            'Education': [str(edu) for edu in person.educations],
-            'Skills': [str(skill) for skill in person.skills],
+            'Experience': [str(experience) for experience in person.experiences],
+            'Education': [str(education) for education in person.educations],
+            'Interests': [str(interest) for interests in person.interests]
         }
-
+        
         return data
 
     except Exception as e:
@@ -61,3 +63,6 @@ def scrape_profiles_from_csv(input_csv, output_csv):
     
     scraped_df.to_csv(output_csv, index=False)
     print(f"Scraping job is complete. Data hasbeen saved to {output_csv}.")
+
+scrape_profiles_from_csv(input_csv, output_csv)
+driver.quit()
