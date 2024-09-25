@@ -32,6 +32,7 @@ def format_experience(experiences):
             f"From: {exp.from_date} - To: {exp.to_date}\n"
             f"Duration: {exp.duration}\n"
             f"Location: {exp.location}\n"
+            f"Description: {exp.description}\n"
             f"LinkedIn URL: {exp.linkedin_url}\n"
         )
         formatted_experiences.append(exp_str)
@@ -63,7 +64,6 @@ def scrape_linkedin_profile(url):
             'About': person.about,
             'Experience': format_experience(person.experiences),
             'Education': format_education(person.educations), 
-            'Interests': person.interests
         }
         
         return data
@@ -73,25 +73,37 @@ def scrape_linkedin_profile(url):
         return None
     
 def scrape_profiles_from_csv(input_csv, output_csv):
+    # Read the input CSV into a DataFrame
     df = pd.read_csv(input_csv)
     
+    # Make sure the CSV has a 'LinkedIn URL' column
     if 'LinkedIn URL' not in df.columns:
-        print("No 'LinkedIn URL' column.")
+        print("Error: Input CSV must contain a 'LinkedIn URL' column.")
         return
     
-    scraped_data = []
+    # Create new columns for the scraped data
+    df['Name'] = None
+    df['Job Title'] = None
+    df['Company'] = None
+    df['About'] = None
+    df['Experience'] = None
+    df['Education'] = None
     
+    # Scrape each LinkedIn profile and add the data to the DataFrame
     for index, row in df.iterrows():
         url = row['LinkedIn URL']
         print(f"Scraping LinkedIn profile: {url}")
         profile_data = scrape_linkedin_profile(url)
-        if profile_data:
-            scraped_data.append(profile_data)
-            
-    scraped_df = pd.DataFrame(scraped_data)
+        df.at[index, 'Name'] = profile_data['Name']
+        df.at[index, 'Job Title'] = profile_data['Job Title']
+        df.at[index, 'Company'] = profile_data['Company']
+        df.at[index, 'About'] = profile_data['About']
+        df.at[index, 'Experience'] = profile_data['Experience']
+        df.at[index, 'Education'] = profile_data['Education']
     
-    scraped_df.to_csv(output_csv, index=False)
-    print(f"Scraping job is complete. Data hasbeen saved to {output_csv}.")
+    # Save the updated DataFrame to the output CSV
+    df.to_csv(output_csv, index=False)
+    print(f"Scraping complete. Data saved to {output_csv}.")
 
 scrape_profiles_from_csv(input_csv, output_csv)
 driver.quit()
